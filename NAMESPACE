@@ -1,0 +1,39 @@
+export("dbchoice", 
+       "sbchoice", 
+       "turnbull.db", 
+       "turnbull.sb", 
+       "kristrom", 
+       "bootCI", 
+       "krCI",
+       "ct2df"
+       )
+
+import(MASS)
+import(Ecdat)
+import(interval)
+
+importFrom("graphics", "axis", "par", "plot", "plot.default")
+importFrom("stats", "binomial", "glm", "integrate", "logLik",
+           "model.matrix", "na.omit", "optim", "pchisq", "plogis",
+           "pnorm", "printCoefmat", "pweibull", "summary.glm",
+           "update", "vcov")
+
+S3method(print, dbchoice)
+S3method(print, summary.dbchoice)
+S3method(summary, dbchoice)
+S3method(print, sbchoice)
+S3method(print, summary.sbchoice)
+S3method(summary, sbchoice)
+S3method(print, turnbull)
+S3method(print, summary.turnbull)
+S3method(summary, turnbull)
+S3method(plot, turnbull)
+S3method(print, kristrom)
+S3method(print, summary.kristrom)
+S3method(summary, kristrom)
+S3method(plot, kristrom)
+S3method(print, krCI)
+#S3method(summary, krCI)
+S3method(print, bootCI)
+# S3method(summary, bootCI)
+

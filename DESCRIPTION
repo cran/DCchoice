@@ -1,0 +1,24 @@
+Package: DCchoice
+Version: 0.0.13-3
+Date: 2015-9-15
+Title: Analyzing Dichotomous Choice Contingent Valuation Data
+Authors@R: c( person("Tomoaki", "Nakatani", role = c("aut",
+        "cph"), email = "naktom2@gmail.com", comment = "original developer"), person("Hideo", "Aizaki",
+        role = c("aut", "cre"), email = "azk-r@spa.nifty.com", comment = "code
+        patches"), person("Kazuo", "Sato", role = "ctb", email =
+        "satokazu@rakuno.ac.jp", comment = "theoretical part of the
+        manual"))
+Depends: R (>= 3.1.0), stats, MASS, Ecdat, interval
+License: GPL (>= 2)
+Description: Functions for analyzing dichotomous choice contingent valuation (CV) data. It provides 
+   functions for estimating parametric and nonparametric models for single- and double-bounded 
+	CV data.
+URL: http://www.agr.hokudai.ac.jp/spmur/
+NeedsCompilation: no
+Packaged: 2015-09-15 07:05:53 UTC; nakatani
+Author: Tomoaki Nakatani [aut, cph] (original developer),
+  Hideo Aizaki [aut, cre] (code patches),
+  Kazuo Sato [ctb] (theoretical part of the manual)
+Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
+Repository: CRAN
+Date/Publication: 2015-09-15 15:15:11

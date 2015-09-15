@@ -1,0 +1,18 @@
+citHeader("To cite the 'DCchoice' package in publications use:")
+
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
+vers <- paste("R package version", meta$Version)
+
+citEntry(entry="Manual",
+         title = "DCchoice: An R Package for Analyzing 
+            Dichotomous Choice Contingent Valuation Data",
+         author = as.person("Tomoaki Nakatani"),
+         year = year,
+         note = vers,
+
+         textVersion =
+         paste("Tomoaki Nakatani (", year, "). 
+            DCchoice: An R Package for Analyzing 
+            Dichotomous Choice Contingent Valuation Data. ",
+               vers, ".", sep=""))
+
