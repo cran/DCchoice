@@ -6,7 +6,9 @@ vers <- paste("R package version", meta$Version)
 citEntry(entry="Manual",
          title = "DCchoice: An R Package for Analyzing 
             Dichotomous Choice Contingent Valuation Data",
-         author = as.person("Tomoaki Nakatani"),
+         author = c(as.person("Tomoaki Nakatani"),
+                    as.person("Hideo Aizaki"),
+                    as.person("Kazuo Sato")),
          year = year,
          note = vers,
 

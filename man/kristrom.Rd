@@ -13,7 +13,7 @@ of the Kristr\"{o}m's nonparametric method.
 }
 
 \usage{
-kristrom(formula, data)
+kristrom(formula, data, subset)
 
 \method{print}{kristrom}(x, digits = 4, \dots)
 }
@@ -21,6 +21,7 @@ kristrom(formula, data)
 \arguments{
     \item{formula}{a formula specifying the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
+    \item{subset}{an optional vector specifying a subset of observations.}
     \item{x}{an object of class \code{"kristrom"}.}
     \item{digits}{a number of digits to display.}
     \item{\dots}{optional arguments. Currently not in use.}

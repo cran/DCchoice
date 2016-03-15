@@ -11,11 +11,11 @@ data on the basis of the Kaplan-Meier-Turnbull method.
 
 \usage{
 ## for the single-bounded data
-turnbull.sb(formula, data, conf.int = FALSE, B = 200, 
+turnbull.sb(formula, data, subset, conf.int = FALSE, B = 200, 
             conf.level = 0.95, timeMessage = FALSE, \dots)
 
 ## for the double-bounded data
-turnbull.db(formula, data, conf.int = FALSE, B = 200, 
+turnbull.db(formula, data, subset, conf.int = FALSE, B = 200, 
             conf.level = 0.95, timeMessage = FALSE, \dots)
 
 \method{print}{turnbull}(x, digits = max(3, getOption("digits") - 1), \dots)
@@ -24,6 +24,7 @@ turnbull.db(formula, data, conf.int = FALSE, B = 200,
 \arguments{
     \item{formula}{a formula specifying the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
+    \item{subset}{an optional vector specifying a subset of observations.}
     \item{x}{an object of class \code{"turnbull"}.}
     \item{conf.int}{logical. If \code{TRUE}, the confidence intervals are computed.}
     \item{B}{number of bootstrap resampling for confidence interval estimation. Defaulted to 200.}

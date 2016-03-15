@@ -1,6 +1,15 @@
-kristrom <- function(formula, data){
+kristrom <- function(formula, data, subset){
   
   if(missing(data)) data <- environment(formula)
+
+  mf <- match.call(expand.dots = TRUE)
+  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+  mf <- mf[c(1L, m)]
+  mf$formula <- formula
+  mf[[1L]] <- as.name("model.frame")
+  mf <- eval(mf, parent.frame())
+  original.data <- data
+  data <- mf
 
   # removing observations with missing values
   na.num <- max(sum(as.numeric(is.na(data))))

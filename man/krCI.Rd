@@ -9,7 +9,7 @@
     and Robb (1986, 1990).
 }
 \usage{
-krCI(obj, nsim = 1000, CI = 0.95)
+krCI(obj, nsim = 1000, CI = 0.95, individual = NULL)
 
 \method{print}{krCI}(x, \dots)
 
@@ -19,6 +19,7 @@ krCI(obj, nsim = 1000, CI = 0.95)
     \item{obj}{an S3 class object \code{"dbchoice"} or \code{"sbchoice"}.}
     \item{nsim}{the number of draws of the parameters.}
     \item{CI}{a percentile of the confidence intervals to be estimated.}
+    \item{individual}{a data frame containing covariates that show an individual of which to estimate WTP.}
     \item{x}{an object of class \code{"krCI"}.}
     \item{\dots}{optional arguments. Currently not in use.}
 }
@@ -36,6 +37,9 @@ krCI(obj, nsim = 1000, CI = 0.95)
     
     Hole (2007) conducted simulation experiments to compare the performance of the method of Krinsky 
     and Robb (1986, 1990) with the bootstrap one. 
+
+    A WTP of a specific individual (e.g., a representative respondent) can be estimated 
+    when assigning covariates to \code{individual}. See Example for details.
 }
 
 \value{

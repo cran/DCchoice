@@ -1,4 +1,4 @@
-krCI <- function(obj, nsim = 1000, CI = 0.95){
+krCI <- function(obj = NULL, nsim = 1000, CI = 0.95, individual = NULL){
   if(CI > 1) stop("CI must be between 0 and 1")
   if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
     # stop if the object is neither a sdchoice nor a dbchoice class
@@ -8,6 +8,8 @@ krCI <- function(obj, nsim = 1000, CI = 0.95){
   X <- obj$covariates   # retrieving the covariates from the object
   npar <- length(obj$coefficients)   # the number of coefficients
   coef <- obj$coefficients   # coefficient estimates
+
+  formula <- formula(obj$formula, lhs = 0, rhs = -2)
 
   if(class(obj) == "sbchoice"){   # covariance matrix of the estimates
     if(obj$dist != "weibull"){
@@ -23,7 +25,14 @@ krCI <- function(obj, nsim = 1000, CI = 0.95){
 
   kr.b <- kr.coef[npar, ]                   # coefficients on the covariates
   kr.coef <- kr.coef[-npar, , drop = FALSE]               # coefficient on the bid
-  kr.Xb <- colSums(colMeans(X[, -npar, drop = FALSE])*kr.coef)
+  if(is.null(individual)) {
+    kr.Xb <- colSums(colMeans(X[, -npar, drop = FALSE])*kr.coef)
+  } else {
+    mf.nexX <- model.frame(formula, individual, xlev = obj$xlevels)
+    mm.newX <- model.matrix(formula, mf.nexX, contrasts.arg = obj$contrasts)
+    newX <- as.vector(mm.newX)
+    kr.Xb <- colSums(newX * kr.coef)
+  }
 
   if(obj$dist == "log-logistic"){ # for log-logistic error distribution
     mbid <- exp(max(obj$bid))     # the maximum bid
@@ -79,7 +88,11 @@ krCI <- function(obj, nsim = 1000, CI = 0.95){
                  kr.adj.trunc.meanWTP[int], # for truncated mean with adjustment
                  kr.median[int])        # for median
 
-  tmp.sum <- summary(obj)
+  if (is.null(individual)) {
+    tmp.sum <- wtp(object = obj$covariates, b = obj$coefficients, bid = obj$bid, dist = obj$dist)
+  } else {
+    tmp.sum <- wtp(object = mm.newX, b = obj$coefficients, bid = obj$bid, dist = obj$dist)
+  }
 
 #  sim.mean <- c(mean(kr.meanWTP), mean(kr.trunc.meanWTP), mean(kr.adj.trunc.meanWTP), median(kr.median))
 #  sim.se <- c(sd(kr.meanWTP), sd(kr.trunc.meanWTP), sd(kr.adj.trunc.meanWTP), -999)

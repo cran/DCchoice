@@ -9,14 +9,17 @@ export("dbchoice",
        )
 
 import(MASS)
-import(Ecdat)
+# import(Ecdat)
 import(interval)
+import(Formula)
 
 importFrom("graphics", "axis", "par", "plot", "plot.default")
 importFrom("stats", "binomial", "glm", "integrate", "logLik",
            "model.matrix", "na.omit", "optim", "pchisq", "plogis",
            "pnorm", "printCoefmat", "pweibull", "summary.glm",
            "update", "vcov")
+importFrom("stats", "as.formula", "coefficients", "delete.response",
+           "formula", "getCall", "model.frame")
 
 S3method(print, dbchoice)
 S3method(print, summary.dbchoice)
@@ -36,4 +39,15 @@ S3method(print, krCI)
 #S3method(summary, krCI)
 S3method(print, bootCI)
 # S3method(summary, bootCI)
+
+S3method(logLik, dbchoice)
+S3method(logLik, sbchoice)
+S3method(plot, dbchoice)
+S3method(plot, sbchoice)
+S3method(predict, dbchoice)
+S3method(predict, sbchoice)
+S3method(update, dbchoice)
+S3method(update, sbchoice)
+S3method(vcov, dbchoice)
+S3method(vcov, sbchoice)
 

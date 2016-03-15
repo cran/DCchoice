@@ -1,5 +1,7 @@
+dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, ...){
+  if (!inherits(formula, "Formula"))
+    formula <- Formula(formula)
 
-dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
   # evaluating the formula and stops if the formula is not defined correctly
   if (!inherits(formula, "formula")) stop("invalid formula")
   # stop if the LHS does not contain two variables
@@ -14,7 +16,14 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
   cl <- match.call()            # a call to the function
   if(missing(data)) stop("the name of the data frame object must be supplied in the 'data' argument")
   
-  data <- eval(data, parent.frame())  # retrieving the data
+  mf <- match.call(expand.dots = TRUE)
+  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+  mf <- mf[c(1L, m)]
+  mf$formula <- formula
+  mf[[1L]] <- as.name("model.frame")
+  mf <- eval(mf, parent.frame())
+  original.data <- data
+  data <- mf
   
   # removing observations with missing values
   na.num <- max(sum(as.numeric(is.na(data))))
@@ -26,17 +35,10 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
   }
 
   # defining the dependent variable
-  lhs1 <- formula[[2]][[2]]       # extracting from the formula the name of the variable for the yes/no to the first bid
-  lhs2 <- formula[[2]][[3]]       # extracting from the formula the name of the variable for the yes/no to the second bid
-  y1 <- eval(lhs1, data)          # yes/no to the first bid
-  y2 <- eval(lhs2, data)          # yes/no to the second bid
+  y1 <- model.part(formula, data = data, lhs = 1)[[1]]  # yes/no to the first bid
+  y2 <- model.part(formula, data = data, lhs = 1)[[2]]  # yes/no to the second bid
   
   nobs <- length(y1)
-  
-  LP1 <- formula[[3]][[3]][[2]]   # extracting from the formula the name of the variable for the first bid
-  LP2 <- formula[[3]][[3]][[3]]   # extracting from the formula the name of the variable for the second bid
-  Lfirst <- eval(LP1, data)       # the first bids
-  Lsecond <- eval(LP2, data)      # the second bids
   
   # making dummy variables for the first and second bids
   if(is.factor(y1)){   # when the yes/no variables are defined as factor
@@ -51,23 +53,19 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
     nn <- ifelse(y1 == 0 & y2 == 0, 1, 0)
    }
 
-  BID <- ifelse(Lfirst > Lsecond, Lsecond, Lfirst)
-    # }
 
     # Creating a design matrix
-    bid <- cbind(Lfirst, Lsecond)   # the first and the second stage bids
+    bidf <- formula(formula, lhs = 0, rhs = 2)
+    bid <- model.frame(bidf, data)  # the first and the second stage bids
+    BID <- ifelse(bid[, 1] > bid[, 2], bid[, 2], bid[, 1])
+
     yvar <- cbind(yy, yn, ny, nn)   # yes/no to "bid"
     
-    ff2 <- ~.
-    ff2[[2]] <- formula[[3]][[2]]   # taking out the covariates from the formula
-    if(ff2[[2]] != 1){ 
-      X <- model.matrix(ff2, data)    # making a design matrix
-    } else {
-      X <- matrix(1, nrow = nobs, ncol = 1)
-      colnames(X) <- "(Intercept)"
-    }
+    ff2 <- formula(formula, lhs = 0, rhs = 1)
+    X <- model.frame(ff2, data)
+    mmX <- model.matrix(ff2, X)
 
-  tmp.data <- data.frame(y1, X, BID)
+    tmp.data <- data.frame(y1, mmX, BID)
 
    # obtaining initial parameter values by logit model
    if(is.null(par)){
@@ -75,7 +73,7 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
          ini <- f.stage$coefficients # saving initial values for ML estimation
          npar <- length(ini)
          ini[npar] <- ifelse(ini[npar] > 0, -ini[npar], ini[npar])     # gives a negative initial value for the bid coefficient
-         if(substr(dist, 1, 4) == "log-") names(ini)[npar] <- "log(bid)"
+         if (substr(dist, 1, 4) == "log-" | dist == "weibull") names(ini)[npar] <- "log(bid)"
          names(ini)[1] <- "(Intercept)"
    } else { # initial parameter values are supplied by the user
       if(length(par) != ncol(tmp.data)-1) stop("the length of 'par' does not coincide with the number of explanatory variables.")
@@ -147,10 +145,20 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
   
   # ML estimation of double-bounded dichotomous choice
   suppressWarnings(
-        dbchoice <- optim(ini, fn = dbLL, method="BFGS", hessian = TRUE, dvar = yvar, ivar = X, bid = bid, control=list(abstol=10^(-30)))
+        dbchoice <- optim(ini, fn = dbLL, method="BFGS", hessian = TRUE, dvar = yvar, ivar = mmX, bid = bid, control = list(abstol = 10^(-30)))
     )
   npar <- length(dbchoice$par)
   
+  terms <- terms(formula)
+  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+  xlevels <- as.list(fac)
+  j <- 0
+  for (i in fac) {
+    j <- j + 1
+    xlevels[[j]] <- levels(X[[i]])
+  }
+  contrasts <- attr(mmX, "contrasts")
+
   # arranging outcomes into a single list variable
    output <- list(
       f.stage = f.stage,            # the outcome of the initial estimation
@@ -164,11 +172,13 @@ dbchoice <- function(formula, data, dist = "log-logistic", par = NULL, ...){
       convergence = ifelse(dbchoice$convergence == 0, TRUE, FALSE),   # convergence status
       niter = dbchoice$counts,      # the number of iterations
       nobs = nobs,                  # the number of observations
-      covariates = X,               # a matrix of the covariates
+      covariates = mmX,             # a matrix of the covariates
       bid = bid,                    # the suggested bid
       yn = cbind(y1, y2),           # the acceptance/rejection variable
-      data.name = data              # the data matrix
-      )
+      data.name = data,             # the data matrix
+      terms = terms,
+      contrasts = contrasts,
+      xlevels = xlevels)
 
   class(output) <- "dbchoice"       # setting the object class
   return(output)
@@ -186,7 +196,8 @@ summary.dbchoice <- function(object, ...){
   dist = object$distribution
 
   # estimating the null model
-    formula_null <- object$formula
+#    formula_null <- object$formula
+    formula_null <- formula(object$formula)
     formula_null[[3]][[2]] <- 1
     db_null <- dbchoice(formula_null, data = eval(object$data.name), dist = dist, par = coef[c(1, npar)])
   
@@ -196,48 +207,11 @@ summary.dbchoice <- function(object, ...){
   }
 
   # computing various mean estimates for different error distributions
-  if(dist == "log-logistic"){
-    b <- coef[npar]         # the estimate on log(bid)
-    Xb <- sum(colMeans(X)*coef[-npar])  # a matrix containing the estimates times the covariates
-    func <- function(x) plogis(-(Xb + b*log(x)), lower.tail = FALSE)  # a function for integrals
-    object$medianWTP <- exp(-Xb/b)
-    object$meanWTP <- ifelse(abs(b) > 1, integrate(func, 0, Inf, stop.on.error = FALSE)$value, Inf)  # a numerical integral for finding the mean WTP
-    object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)))$value                                  # a numerical integral for finding the truncated mean WTP
-    object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)))$value/plogis(-(Xb + b*max(bid)))   # a numerical integral for finding the truncated mean WTP with adjustment
-  }  else if(dist == "log-normal"){
-    b <- coef[npar]         # the estimate on log(bid)
-    Xb <- sum(colMeans(X)*coef[-npar])
-    func <- function(x) pnorm(-(Xb + b*log(x)), lower.tail = FALSE)
-    object$medianWTP <- exp(-Xb/b)
-    object$meanWTP <- integrate(func, 0, Inf, stop.on.error = FALSE)$value
-    object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)))$value
-    object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)))$value/pnorm(-(Xb + b*max(bid)))
-  } else if(dist == "logistic"){
-    b <- coef[npar]         # the estimate on log(bid)
-    Xb <- sum(colMeans(X)*coef[-npar])
-    func <- function(x) plogis(-(Xb + b*x), lower.tail = FALSE)
-    object$medianWTP <- -Xb/b
-    object$meanWTP <- integrate(func, 0, Inf, stop.on.error = FALSE)$value
-    object$trunc.meanWTP <- integrate(func, 0, max(bid))$value
-    object$adj.trunc.meanWTP <- integrate(func, 0, max(bid))$value/plogis(-(Xb + b*max(bid)))
-  }  else if(dist == "normal"){
-    b <- coef[npar]         # the estimate on log(bid)
-    Xb <- sum(colMeans(X)*coef[-npar])
-    func <- function(x) pnorm(-(Xb + b*x), lower.tail = FALSE)
-    object$medianWTP <- -Xb/b
-    object$meanWTP <- integrate(func, 0, Inf)$value
-    object$trunc.meanWTP <- integrate(func, 0, max(bid))$value
-    object$adj.trunc.meanWTP <- integrate(func, 0, max(bid))$value/pnorm(-(Xb + b*max(bid)))
-  } else if(dist == "weibull"){
-    b <- coef[npar]
-    Xb <- sum(colMeans(X[, -npar])*coef[-npar])
-    
-    func <- function(x) pweibull(exp(-Xb - b*log(x)), shape=1, lower.tail=FALSE)
-    object$medianWTP <- exp(-Xb/b)*(log(2))^(-1/b)
-    object$meanWTP <- ifelse(abs(b) > 1, exp(-Xb/b)*gamma(1-1/b), Inf)  
-    object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value                         
-    object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value/pweibull(exp(-Xb - b*max(bid)), shape=1)                    
-  }
+  WTPs <- wtp(object = X, b = coef, bid = bid, dist = dist)
+  object$medianWTP <- WTPs$medianWTP
+  object$meanWTP <- WTPs$meanWTP
+  object$trunc.meanWTP <- WTPs$trunc.meanWTP
+  object$adj.trunc.meanWTP <- WTPs$adj.trunc.meanWTP
 
   # computing pseudo-R^2
 #   object$psdR2 <- 1 - object$loglik/db_null$loglik

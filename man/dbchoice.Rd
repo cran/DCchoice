@@ -1,25 +1,34 @@
 \name{dbchoice}
 \alias{dbchoice}
 \alias{print.dbchoice}
+\alias{vcov.dbchoice}
+\alias{logLik.dbchoice}
 
 \title{Parametric approach to analyze double-bounded dichotomous choice contingent valuation data}
 \description{This function analyzes double-bounded dichotomous choice contingent 
             valuation (CV) data on the basis of the utility difference approach.}
 \usage{
-dbchoice(formula, data, dist = "log-logistic", par = NULL, \dots)
+dbchoice(formula, data, subset, dist = "log-logistic", par = NULL, \dots)
 
 \method{print}{dbchoice}(x, digits = max(3, getOption("digits") - 1), \dots)
+
+\method{vcov}{dbchoice}(object, \dots)
+
+\method{logLik}{dbchoice}(object, \dots)
+
 }
 
 \arguments{
     \item{formula}{an object of S3 class \code{"formula"} and specifies the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
+    \item{subset}{an optional vector specifying a subset of observations.}
     \item{dist}{a character string setting the error distribution in the model, which 
                 takes one of \code{"logistic"}, \code{"normal"}, \code{"log-logistic"}, 
                 \code{"log-normal"} or \code{"weibull"}.}
     \item{par}{a vector of initial parameters over which the optimization is carried out.}
     \item{x}{an object of class \code{"dbchoice"}.}
     \item{digits}{a number of digits to display.}
+    \item{object}{an object of class \code{"dbchoice"}.}
     \item{...}{optional arguments. Currently not in use.}
 }
 
@@ -134,6 +143,9 @@ This function returns an S3 class object \code{"dbchoice"} that is a list with t
 \item{bid}{a named matrix of the bids used in the model.}
 \item{yn}{a named matrix of the responses to the initial and follow-up CV questions used in the model.}
 \item{data.name}{the data matrix.}
+\item{terms}{terms}
+\item{contrast}{contrasts used for factors}
+\item{xlevels}{levels used for factors}
 }
 
 \references{
@@ -228,6 +240,38 @@ NPdbs
 krCI(NPdb)
 bootCI(NPdb)
 }
+## The WTP of a female with age = 5 and income = 3 is calculated
+## using function krCI() or bootCI() as follows:
+\dontrun{
+krCI(NPdb, individual = data.frame(sex = "female", age = 5, income = 3))
+bootCI(NPdb, individual = data.frame(sex = "female", age = 5, income = 3))
+}
+
+## The variable age and income are deleted from the fitted model, 
+## and the updated model is fitted as follows:
+update(NPdb, .~. - age - income |.)
+
+## The bid design used in this example is created as follows:
+bid.design <- unique(NaturalPark[, c(1:3)])
+bid.design <- log(bid.design)
+colnames(bid.design) <- c("LBD1", "LBDH", "LBDL")
+bid.design
+## Respondents' utility and probability of choosing Yes-Yes, Yes-No, 
+## No-Yes, and No-No under the fitted model and original data are 
+## predicted as follows: 
+head(predict(NPdb, type = "utility", bid = bid.design))
+head(predict(NPdb, type = "probability", bid = bid.design))
+## Utility and probability of choosing Yes for a female with age = 5 
+## and income = 3 under bid = 10 are predicted as follows:
+predict(NPdb, type = "utility",
+    newdata = data.frame(sex = "female", age = 5, income = 3, LBD1 = log(10)))
+predict(NPdb, type = "probability",
+    newdata = data.frame(sex = "female", age = 5, income = 3, LBD1 = log(10)))
+
+## Plot of probabilities of choosing yes is drawn as drawn as follows:
+plot(NPdb)
+## The range of bid can be limited (e.g., [log(10), log(20)]):
+plot(NPdb, bid = c(log(10), log(20)))
 }
 
 

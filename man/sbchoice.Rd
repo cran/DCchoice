@@ -1,6 +1,9 @@
 \name{sbchoice}
 \alias{sbchoice}
 \alias{print.sbchoice}
+\alias{vcov.sbchoice}
+\alias{logLik.sbchoice}
+
 
 \title{Parametric approach to analyze single-bounded dichotomous choice contingent valuation data}
 \description{
@@ -9,19 +12,25 @@ on the basis of the utility difference approach.
 }
 
 \usage{
-sbchoice(formula, data, dist = "log-logistic", \dots)
+sbchoice(formula, data, subset, dist = "log-logistic", \dots)
 
 \method{print}{sbchoice}(x, digits = max(3, getOption("digits") - 1), \dots)
+
+\method{vcov}{sbchoice}(object, \dots)
+
+\method{logLik}{sbchoice}(object, \dots)
 }
 
 \arguments{
     \item{formula}{an S3 class object \code{"formula"} and specifies the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
+    \item{subset}{an optional vector specifying a subset of observations.}
     \item{dist}{a character string setting the error distribution in the model, which takes one 
         of \code{"logistic"}, \code{"normal"}, \code{"log-logistic"}, \code{"log-normal"} or 
         \code{"weibull"}.}
     \item{x}{an object of class \code{"sbchoice"}.}
     \item{digits}{a number of digits to display.}
+    \item{object}{an object of class \code{"dbchoice"}.}
     \item{\dots}{optional arguments. Currently not in use.}
 }
 
@@ -41,7 +50,7 @@ There are two functions available for computing the confidence intervals for the
 Most of the details of \code{sbchoice()} is the same as those of \code{dbchoice()}, a double-bounded 
 analogue of \code{sbchoice}. See the section \strong{Details} in \code{\link{dbchoice}}. Differences between 
 the two functions are as follows:
-\enumerate{
+\itemize{
     \item In the model formula, the first part contains only one response variable (e.g., \code{R1}) 
     and the third part contains only one bid variable (e.g., \code{BD1}) because respondents are 
     requested to answer a CV question in the single-bounded dichotomous choice CV. The following 
@@ -50,8 +59,9 @@ the two functions are as follows:
     \item The function \code{sbchoice()} analyzes the responses to single-bounded dichotomous choice CV 
     questions internally using the function \code{glm()} with the argument \cr
     \code{family = binomial(link = "logit")}\cr 
-    or \code{family = binomial(link = "probit")}.\cr
-    When \code{dist = "weibull"}, optimization is carries out using the \code{optim()} function 
+    or\cr
+    \code{family = binomial(link = "probit")}.\cr
+    When \code{dist = "weibull"}, optimization is carried out using the \code{optim()} function 
     with a hard-coded log-likelihood function.
     \item Outputs from \code{sbchoice()} are slightly different from those from \code{dbchoice()} 
     because the analysis in \code{sbchoice()} internally depends on the function \code{glm()} 
@@ -79,6 +89,9 @@ This function returns an object of S3 class \code{"sbchoice"} that is a list wit
 \item{bid}{a named matrix of the bids used in the model.}
 \item{yn}{a named matrix of the responses to the CV question used in the model.}
 \item{data.name}{the data matrix.}
+\item{terms}{terms}
+\item{contrast}{contrasts used for factors}
+\item{xlevels}{levels used for factors}
 }
 
 
@@ -169,7 +182,31 @@ coefficients(NPsb$glm.out)
 ## function krCI() or bootCI() as follows:
 krCI(NPsb)
 bootCI(NPsb)
+## The WTP of a female with age = 5 and income = 3 is calculated
+## using function krCI() or bootCI() as follows:
+krCI(NPsb, individual = data.frame(sex = "female", age = 5, income = 3))
+bootCI(NPsb, individual = data.frame(sex = "female", age = 5, income = 3))
 }
+
+## The variable age and income are deleted from the fitted model, 
+## and the updated model is fitted as follows:
+update(NPsb, .~. - age - income |.)
+
+## Respondents' utility and probability of choosing Yes under 
+## the fitted model and original data are predicted as follows: 
+head(predict(NPsb, type = "utility"))
+head(predict(NPsb, type = "probability"))
+## Utility and probability of choosing Yes for a female with age = 5 
+## and income = 3 under bid = 10 are predicted as follows:
+predict(NPsb, type = "utility",
+    newdata = data.frame(sex = "female", age = 5, income = 3, LBD1 = log(10)))
+predict(NPsb, type = "probability",
+    newdata = data.frame(sex = "female", age = 5, income = 3, LBD1 = log(10)))
+
+## Plot of probabilities of choosing yes is drawn as drawn as follows:
+plot(NPsb)
+## The range of bid can be limited (e.g., [log(10), log(20)]):
+plot(NPsb, bid = c(log(10), log(20)))
 }
 
 \keyword{DCchoice}

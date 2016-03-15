@@ -1,5 +1,8 @@
 # a binary choice model for Single-bounded data. a simple logit or probit model
-sbchoice <- function(formula, data, dist = "log-logistic", ...){
+sbchoice <- function(formula, data, subset, dist = "log-logistic", ...){
+  if (!inherits(formula, "Formula"))
+  formula <- Formula(formula)
+
   # evaluating the formula and stops if the formula is not defined correctly
   if (!inherits(formula, "formula")) stop("invalid formula")
 
@@ -7,7 +10,16 @@ sbchoice <- function(formula, data, dist = "log-logistic", ...){
 #  if(missing(data)) data <- environment(formula)
   if(missing(data)) stop("the name of the data frame object must be supplied in the 'data' argument")
   
-  data <- eval(data, parent.frame())
+#  data <- eval(data, parent.frame())
+  mf <- match.call(expand.dots = TRUE)
+  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+  mf <- mf[c(1L, m)]
+  mf$formula <- formula
+  mf[[1L]] <- as.name("model.frame")
+  mf <- eval(mf, parent.frame())
+  original.data <- data
+  data <- mf
+  mm.data <- model.matrix(formula, data = data, rhs = 1:2)
 
   # removing observations with missing values
   na.num <- max(sum(as.numeric(is.na(data))))
@@ -19,42 +31,43 @@ sbchoice <- function(formula, data, dist = "log-logistic", ...){
   }
 
   # defining the dependent variable 
-  lhs <- formula[[2]]       # extracting the name of the acceptance/rejection variable from the formula supplied
-  y1 <- eval(lhs, data)     # yes/no to the bids
+  y1 <- model.part(formula, data = data, lhs = 1)[[1]]  # yes/no to the bids
 
   nobs <- length(y1)
   
-  LP1 <- formula[[3]][[3]]  # extracting the name of the bid variable from the formula supplied
-  BID <- eval(LP1, data)    # the suggested bid
+  BID <- model.frame(formula, data = data, lhs = 0, rhs = 2)[[1]]  # the suggested bid
   
   # handling the data matrix
-  f2 <- ~.
-  f2[[2]] <- formula[[3]][[2]]   # retrieving the names of the covariates other than the bid variable
-  if(f2[[2]] != 1){
-    X <- model.matrix(f2, data)    # making a design matrix
-  } else {                         # for a model without covariate
-    X <- matrix(1, nrow = nobs, ncol = 1) # making a constant term
-    colnames(X) <- "(Intercept)"  # naming the constant
-  }
+  f2 <- formula(formula, lhs = 0, rhs = 1)
+  X <- model.frame(f2, data)
+  mmX <- model.matrix(f2, X)
 
-  tmp.data <- data.frame(y1, X, BID)  # re-combining all the ables into a single dataframe
+  form <- formula(terms(formula))
 
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
 if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic error distribution
-    glm.out <- glm(y1~. -1, family = binomial(link = "logit"), data = tmp.data)  # unrestricted model
+    glm.out <- glm(form, family = binomial(link = "logit"), data = data)  # unrestricted model
     glm.null <- update(glm.out, .~ 1)  # restricted (only the intercept) model
     
     npar <- length(glm.out$coefficients) # the number of parameters
-    if(substr(dist, 1, 4) == "log-") names(glm.out$coefficients)[npar] <- "log(bid)" # changing the name label if the model is log-logistic
+    if (substr(dist, 1, 4) == "log-") {  # changing the name label if the model is log-logistic
+        names(glm.out$coefficients)[npar] <- "log(bid)"
+    } else {
+        names(glm.out$coefficients)[npar] <- "BID"
+    }
     names(glm.out$coefficients)[1] <- "(Intercept)"
     estimates <- glm.out$coefficients  # taking out the estimates
     
 } else if(dist == "normal" | dist == "log-normal") {  # normal or log-normal error distribution
-    glm.out <- glm(y1~. -1, family = binomial(link = "probit"), data = tmp.data)
+    glm.out <- glm(form, family = binomial(link = "probit"), data = data)
     glm.null <- update(glm.out, .~ 1)
     
     npar <- length(glm.out$coefficients)
-    if(substr(dist, 1, 4) == "log-") names(glm.out$coefficients)[npar] <- "log(bid)"
+    if (substr(dist, 1, 4) == "log-") {
+        names(glm.out$coefficients)[npar] <- "log(bid)"
+    } else {
+        names(glm.out$coefficients)[npar] <- "BID"
+    }
     names(glm.out$coefficients)[1] <- "(Intercept)"
     estimates <- glm.out$coefficients
 } else if(dist == "weibull"){
@@ -68,13 +81,15 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
           ifelse(is.finite(ll), return(-ll), NaN) 
       }
     # initial parameter values
-    ini.par <- glm(y1~. -1, family = binomial(link = "probit"), data = tmp.data)$coefficients
-    ini.par.null <- glm(y1 ~ 1, family = binomial(link = "probit"), data = tmp.data)$coefficients
+    ini <- glm(form, family = binomial(link = "probit"), data = data)
+    ini.par <- ini$coefficients
+    ini.par.null <- update(ini, . ~ 1)$coefficients
+
     
     # ML estimation
     suppressWarnings( # "glm." is nothing to do with GLM. The naming is merely because of compatibility
 #        glm.out <- optim(ini.par, fn = sbLL, method="BFGS", hessian = TRUE, dvar = y1, ivar = cbind(X, BID), control=list(abstol=10^(-30)))
-        glm.out <- optim(ini.par, fn = sbLL, method="BFGS", hessian = TRUE, dvar = y1, ivar = cbind(X, BID))
+        glm.out <- optim(ini.par, fn = sbLL, method="BFGS", hessian = TRUE, dvar = y1, ivar = mm.data)
     )
     suppressWarnings(
 #        glm.null <- optim(ini.par.null, fn = sbLL, method = "BFGS", hessian = TRUE, dvar = y1, ivar = matrix(1, nobs, 1), control=list(abstol=10^(-30)))
@@ -84,6 +99,8 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
     if(dist == "weibull") {
       npar <- length(glm.out$par)     # the number of parameters
       names(glm.out$par)[npar] <- "log(bid)"
+      colnames(glm.out$hessian)[npar] <- "log(bid)"
+      rownames(glm.out$hessian)[npar] <- "log(bid)"
     }
     estimates <- glm.out$par
     # compatibility with other distributions
@@ -95,6 +112,17 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
     stop("dist must be logistic, normal or weibull")
 }
 
+  terms <- terms(formula)
+  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+  xlevels <- as.list(fac)
+  j <- 0
+  for (i in fac) {
+    j <- j + 1
+    xlevels[[j]] <- levels(X[[i]])
+  }
+  contrasts <- attr(mmX, "contrasts")
+
+
   # arranging outcomes into a single list variable
    output <- list(
       coefficients = estimates, # the coefficient estimates
@@ -103,11 +131,14 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
       glm.out = glm.out,    # the outcome of the unrestricted model
       glm.null = glm.null,  # the outcome of the null model
       distribution = dist,  # the specified error distribution
-      covariates = X,       # a matrix of the covariates
+      covariates = mmX,       # a matrix of the covariates
       bid = BID,            # the suggested bid
       nobs = nobs,          # the number of observations
       yn = y1,              # the acceptance/rejection variable
-      data.name = data      # the data matrix
+      data.name = data,     # the data matrix
+      terms = terms,
+      contrasts = contrasts,
+      xlevels = xlevels
       )
 
   class(output) <- "sbchoice"   # setting the object class
@@ -138,58 +169,20 @@ summary.sbchoice <- function(object, ...){
     
     object$loglik <- -object$glm.out$value
     object$loglik.null <- -object$glm.null$value
-
-    
-    b <- coef[npar]
-    Xb <- sum(colMeans(X)*coef[-npar])
-    
-    func <- function(x) pweibull(exp(-Xb - b*log(x)), shape=1, lower.tail=FALSE)
-    object$medianWTP <- exp(-Xb/b)*(log(2))^(-1/b)
-    object$meanWTP <- ifelse(abs(b) > 1, exp(-Xb/b)*gamma(1-1/b), Inf)  
-    object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value                         
-    object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value/pweibull(exp(-Xb - b*max(bid)), shape=1)                    
   } else {
     # obtaining necessary components from the object
     object$glm.summary <- summary.glm(object$glm.out)
     object$glm.null.summary <- summary.glm(object$glm.null)
     object$loglik <- logLik(object$glm.out)[1]
     object$loglik.null <- logLik(object$glm.null)[1]
-
-    # computing various mean estimates for different error distributions
-    if(dist == "log-logistic"){
-      b <- coef[npar]         # the estimate on log(bid)
-      Xb <- sum(colMeans(X[, -npar, drop = FALSE])*coef[-npar]) # a matrix containing the estimates times the covariates
-      func <- function(x) plogis(-(Xb + b*log(x)), lower.tail = FALSE)  # a function for integrals
-      object$medianWTP <- exp(-Xb/b)
-      object$meanWTP <- ifelse(abs(b) > 1, integrate(func, 0, Inf, stop.on.error = FALSE)$value, Inf)   # a numerical integral for finding the mean WTP
-      object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value            # a numerical integral for finding the truncated mean WTP
-      object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value/plogis(-(Xb + b*max(bid))) # a numerical integral for finding the truncated mean WTP with adjustment
-    }  else if(dist == "log-normal"){
-      b <- coef[npar]         # the estimate on log(bid)
-      Xb <- sum(colMeans(X[, -npar, drop = FALSE])*coef[-npar])
-      func <- function(x) pnorm(-(Xb + b*log(x)), lower.tail = FALSE)
-      object$medianWTP <- exp(-Xb/b)
-      object$meanWTP <- integrate(func, 0, Inf, stop.on.error = FALSE)$value
-      object$trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value
-      object$adj.trunc.meanWTP <- integrate(func, 0, exp(max(bid)), stop.on.error = FALSE)$value/pnorm(-(Xb + b*max(bid)))
-    } else if(dist == "logistic"){
-      b <- coef[npar]         # the estimate on log(bid)
-      Xb <- sum(colMeans(X[, -npar, drop = FALSE])*coef[-npar])
-      func <- function(x) plogis(-(Xb + b*x), lower.tail = FALSE)
-      object$medianWTP <- -Xb/b
-      object$meanWTP <- integrate(func, 0, Inf, stop.on.error = FALSE)$value
-      object$trunc.meanWTP <- integrate(func, 0, max(bid))$value
-      object$adj.trunc.meanWTP <- integrate(func, 0, max(bid))$value/plogis(-(Xb + b*max(bid)))
-    }  else if(dist == "normal"){
-      b <- coef[npar]         # the estimate on log(bid)
-      Xb <- sum(colMeans(X[, -npar, drop = FALSE])*coef[-npar])
-      func <- function(x) pnorm(-(Xb + b*x), lower.tail = FALSE)
-      object$medianWTP <- -Xb/b
-      object$meanWTP <- integrate(func, 0, Inf, stop.on.error = FALSE)$value
-      object$trunc.meanWTP <- integrate(func, 0, max(bid), stop.on.error = FALSE)$value
-      object$adj.trunc.meanWTP <- integrate(func, 0, max(bid), stop.on.error = FALSE)$value/pnorm(-(Xb + b*max(bid)))
-    }
   } 
+    # computing various mean estimates for different error distributions
+    WTPs <- wtp(object = X, b = coef, bid = bid, dist = dist)
+    object$medianWTP <- WTPs$medianWTP
+    object$meanWTP <- WTPs$meanWTP
+    object$trunc.meanWTP <- WTPs$trunc.meanWTP
+    object$adj.trunc.meanWTP <- WTPs$adj.trunc.meanWTP
+
     # computing pseudo-R^2
     object$psdR2 <- 1 - object$loglik/object$loglik.null
     names(object$psdR2) <- "pseudo-R^2 measure"

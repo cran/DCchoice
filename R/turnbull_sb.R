@@ -1,11 +1,20 @@
 # Kaplan-Meier-Turnbull nonparametric approach to analyze 
 # single-bounded dichotomous choice contingent valuation data
 
-turnbull.sb <- function(formula, data, conf.int = FALSE, B = 200, conf.level = 0.95, timeMessage = FALSE, ...){
+turnbull.sb <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.level = 0.95, timeMessage = FALSE, ...){
     if(missing(data)) data <- environment(formula)
     
     if(length(formula[[2]]) != 1) stop("something is wrong with formula")
     
+    mf <- match.call(expand.dots = TRUE)
+    m <- match(c("formula", "data", "subset"), names(mf), 0L)
+    mf <- mf[c(1L, m)]
+    mf$formula <- formula
+    mf[[1L]] <- as.name("model.frame")
+    mf <- eval(mf, parent.frame())
+    original.data <- data
+    data <- mf
+
     # removing observations with missing values
     na.num <- max(sum(as.numeric(is.na(data))))
     if(na.num != 0){ 

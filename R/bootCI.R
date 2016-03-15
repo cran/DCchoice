@@ -1,5 +1,5 @@
 # Computing a bootsrap confidence interval
-bootCI <- function(obj, nboot = 1000, CI = 0.95){
+bootCI <- function (obj, nboot = 1000, CI = 0.95, individual = NULL){
   if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
     # stop if the object is neither a sdchoice nor a dbchoice class
     stop("the object must be either dbchoice of sbchoice class")
@@ -19,6 +19,12 @@ bootCI <- function(obj, nboot = 1000, CI = 0.95){
   dist <- obj$distribution
   fr <- obj$formula
 
+  if (!is.null(individual)) {
+    formula <- formula(obj$formula, lhs = 0, rhs = -2)
+    mf.nexX <- model.frame(formula, individual, xlev = obj$xlevels)
+    mm.newX <- model.matrix(formula, mf.nexX, contrasts.arg = obj$contrasts)
+  }
+
   if(class(obj) == "dbchoice"){
     for(i in 1:nboot){
       ind.boot <- sample(ind, nobs, replace = TRUE)  # determining the number of rows for bootstrap sample with replacement
@@ -27,7 +33,11 @@ bootCI <- function(obj, nboot = 1000, CI = 0.95){
         tmp.re <- dbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)  # estimating a DBCV model
       )
       if(tmp.re$convergence){
-        boot <- summary(tmp.re)
+        if (is.null(individual)) {
+          boot <- wtp(object = tmp.re$covariates, b = tmp.re$coefficients, bid = tmp.re$bid, dist = tmp.re$dist)
+        } else {
+          boot <- wtp(object = mm.newX, b = tmp.re$coefficients, bid = tmp.re$bid, dist = tmp.re$dist)
+        }
         boot.mean[i] <- boot$meanWTP
         boot.median[i] <- boot$medianWTP
         boot.trmean[i] <- boot$trunc.meanWTP
@@ -44,7 +54,11 @@ bootCI <- function(obj, nboot = 1000, CI = 0.95){
         tmp.re <- sbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)
       )
       if(tmp.re$glm.out$converged){
-        boot <- summary(tmp.re)
+        if (is.null(individual)) {
+          boot <- wtp(object = tmp.re$covariates, b = tmp.re$coefficients, bid = tmp.re$bid, dist = tmp.re$dist)
+        } else {
+          boot <- wtp(object = mm.newX, b = tmp.re$coefficients, bid = tmp.re$bid, dist = tmp.re$dist)
+        }
         boot.mean[i] <- boot$meanWTP
         boot.median[i] <- boot$medianWTP
         boot.trmean[i] <- boot$trunc.meanWTP
@@ -64,8 +78,8 @@ bootCI <- function(obj, nboot = 1000, CI = 0.95){
   boot.trmean <- sort(boot.trmean)
   boot.adj.trmean <- sort(boot.adj.trmean)
 
- lb <- 0.5*(1 - CI)   # lower bound of the empirical distribution
- ub <- CI + lb        # upper bound of the empirical distribution
+  lb <- 0.5*(1 - CI)   # lower bound of the empirical distribution
+  ub <- CI + lb        # upper bound of the empirical distribution
 
   int <- c(ceiling(nboot*lb), floor(nboot*ub))  # subscripts corresponding to lb and ub
 
@@ -75,7 +89,12 @@ bootCI <- function(obj, nboot = 1000, CI = 0.95){
                  boot.adj.trmean[int],  # for truncated mean with adjustment
                  boot.median[int])  # for median
   
-  tmp.sum <- summary(obj) # obtaining the mean estimates in the original outcome
+  # the mean estimates in the original outcome
+  if (is.null(individual)) {
+    tmp.sum <- wtp(object = obj$covariates, b = obj$coefficients, bid = obj$bid, dist = obj$dist)
+  } else {
+    tmp.sum <- wtp(object = mm.newX, b = obj$coefficients, bid = obj$bid, dist = obj$dist)
+  }
   
   out <- cbind(c(tmp.sum$meanWTP, tmp.sum$trunc.meanWTP, tmp.sum$adj.trunc.meanWTP, tmp.sum$medianWTP), CImat)
   rownames(out) <- c("Mean", "truncated Mean", "adjusted truncated Mean", "Median")
