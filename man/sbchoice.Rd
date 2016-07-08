@@ -12,7 +12,8 @@ on the basis of the utility difference approach.
 }
 
 \usage{
-sbchoice(formula, data, subset, dist = "log-logistic", \dots)
+sbchoice(formula, data, subset, na.action = na.omit, 
+         dist = "log-logistic", \dots)
 
 \method{print}{sbchoice}(x, digits = max(3, getOption("digits") - 1), \dots)
 
@@ -25,6 +26,7 @@ sbchoice(formula, data, subset, dist = "log-logistic", \dots)
     \item{formula}{an S3 class object \code{"formula"} and specifies the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
     \item{subset}{an optional vector specifying a subset of observations.}
+    \item{na.action}{a function which indicates what should happen when the data contains \code{NA}s.}
     \item{dist}{a character string setting the error distribution in the model, which takes one 
         of \code{"logistic"}, \code{"normal"}, \code{"log-logistic"}, \code{"log-normal"} or 
         \code{"weibull"}.}

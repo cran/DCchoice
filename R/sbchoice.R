@@ -1,5 +1,6 @@
-# a binary choice model for Single-bounded data. a simple logit or probit model
-sbchoice <- function(formula, data, subset, dist = "log-logistic", ...){
+sbchoice <- function(formula, data, subset, na.action = na.omit, dist = "log-logistic", ...) {
+# argument "na.action" was added in June 2016
+
   if (!inherits(formula, "Formula"))
   formula <- Formula(formula)
 
@@ -12,7 +13,11 @@ sbchoice <- function(formula, data, subset, dist = "log-logistic", ...){
   
 #  data <- eval(data, parent.frame())
   mf <- match.call(expand.dots = TRUE)
-  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+
+# Revised in 2016
+#  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+m <- match(c("formula", "data", "subset", "na.action"), names(mf), 0L)
+
   mf <- mf[c(1L, m)]
   mf$formula <- formula
   mf[[1L]] <- as.name("model.frame")
@@ -21,32 +26,49 @@ sbchoice <- function(formula, data, subset, dist = "log-logistic", ...){
   data <- mf
   mm.data <- model.matrix(formula, data = data, rhs = 1:2)
 
-  # removing observations with missing values
-  na.num <- max(sum(as.numeric(is.na(data))))
-  if(na.num != 0){ 
-    d1 <- nrow(data)
-    data <- na.omit(data)
-    d2 <- nrow(data)
-    warning(paste("Missing values detected.", d1 - d2, "rows are removed.", sep = " "))
-  }
+#  # removing observations with missing values
+#  na.num <- max(sum(as.numeric(is.na(data))))
+#  if(na.num != 0){ 
+#    d1 <- nrow(data)
+#    data <- na.omit(data)
+#    d2 <- nrow(data)
+#    warning(paste("Missing values detected.", d1 - d2, "rows are removed.", sep = " "))
+#  }
 
   # defining the dependent variable 
   y1 <- model.part(formula, data = data, lhs = 1)[[1]]  # yes/no to the bids
 
   nobs <- length(y1)
-  
-  BID <- model.frame(formula, data = data, lhs = 0, rhs = 2)[[1]]  # the suggested bid
+
+# Revised in June 2016  
+#  BID <- model.frame(formula, data = data, lhs = 0, rhs = 2)[[1]]  # the suggested bid
+BID <- model.part(formula, data, lhs = 0, rhs = 2)
   
   # handling the data matrix
   f2 <- formula(formula, lhs = 0, rhs = 1)
-  X <- model.frame(f2, data)
-  mmX <- model.matrix(f2, X)
+
+# Revised in June 2016
+#  X <- model.frame(f2, data)
+#  mmX <- model.matrix(f2, X)
+X   <-   model.part(formula, data, lhs = 0, rhs = 1)
+mmX <- model.matrix(formula, data, lhs = 0, rhs = 1)
 
   form <- formula(terms(formula))
 
+# Revised in June 2016
+if (missing(subset)) {
+  data.glm <- original.data
+} else {
+  data.glm <- subset(original.data, subset = subset)
+}  
+
 ## %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ##
 if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic error distribution
-    glm.out <- glm(form, family = binomial(link = "logit"), data = data)  # unrestricted model
+
+# Revised in June 2016
+#    glm.out <- glm(form, family = binomial(link = "logit"), data = data)  # unrestricted model
+glm.out <- glm(form, family = binomial(link = "logit"), data = data.glm, na.action = na.action)  # unrestricted model
+
     glm.null <- update(glm.out, .~ 1)  # restricted (only the intercept) model
     
     npar <- length(glm.out$coefficients) # the number of parameters
@@ -59,7 +81,11 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
     estimates <- glm.out$coefficients  # taking out the estimates
     
 } else if(dist == "normal" | dist == "log-normal") {  # normal or log-normal error distribution
-    glm.out <- glm(form, family = binomial(link = "probit"), data = data)
+
+# Revised in June 2016
+#    glm.out <- glm(form, family = binomial(link = "probit"), data = data)
+glm.out <- glm(form, family = binomial(link = "probit"), data = data.glm, na.action = na.action)
+
     glm.null <- update(glm.out, .~ 1)
     
     npar <- length(glm.out$coefficients)
@@ -81,7 +107,11 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
           ifelse(is.finite(ll), return(-ll), NaN) 
       }
     # initial parameter values
-    ini <- glm(form, family = binomial(link = "probit"), data = data)
+
+# Revised in June 2016
+#    ini <- glm(form, family = binomial(link = "probit"), data = data)
+ini <- glm(form, family = binomial(link = "probit"), data = data.glm, na.action = na.action)
+
     ini.par <- ini$coefficients
     ini.par.null <- update(ini, . ~ 1)$coefficients
 
@@ -113,7 +143,11 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
 }
 
   terms <- terms(formula)
-  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+
+# Revised in June 2016
+#  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+fac <- which(sapply(X, is.factor) == TRUE)
+
   xlevels <- as.list(fac)
   j <- 0
   for (i in fac) {
@@ -138,6 +172,10 @@ if(dist == "logistic" | dist == "log-logistic"){  # logistic or log-logistic err
       data.name = data,     # the data matrix
       terms = terms,
       contrasts = contrasts,
+
+# Revised in June 2016
+data = original.data,
+
       xlevels = xlevels
       )
 

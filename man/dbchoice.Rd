@@ -8,7 +8,8 @@
 \description{This function analyzes double-bounded dichotomous choice contingent 
             valuation (CV) data on the basis of the utility difference approach.}
 \usage{
-dbchoice(formula, data, subset, dist = "log-logistic", par = NULL, \dots)
+dbchoice(formula, data, subset, na.action = na.omit, dist = "log-logistic",
+         par = NULL, \dots)
 
 \method{print}{dbchoice}(x, digits = max(3, getOption("digits") - 1), \dots)
 
@@ -22,6 +23,7 @@ dbchoice(formula, data, subset, dist = "log-logistic", par = NULL, \dots)
     \item{formula}{an object of S3 class \code{"formula"} and specifies the model structure.}
     \item{data}{a data frame containing the variables in the model formula.}
     \item{subset}{an optional vector specifying a subset of observations.}
+    \item{na.action}{a function which indicates what should happen when the data contains \code{NA}s.}
     \item{dist}{a character string setting the error distribution in the model, which 
                 takes one of \code{"logistic"}, \code{"normal"}, \code{"log-logistic"}, 
                 \code{"log-normal"} or \code{"weibull"}.}

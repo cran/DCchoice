@@ -1,8 +1,12 @@
 krCI <- function(obj = NULL, nsim = 1000, CI = 0.95, individual = NULL){
   if(CI > 1) stop("CI must be between 0 and 1")
-  if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
+
+# Revised in June 2016
+#  if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
+  if(!inherits(obj, c("sbchoice", "dbchoice", "oohbchoice"))){
     # stop if the object is neither a sdchoice nor a dbchoice class
-    stop("the object must be either dbchoice of sbchoice class")
+#    stop("the object must be either dbchoice of sbchoice class")
+    stop("the object must be sbchoice, dbchoice, or oohbchoice class")
   }
   
   X <- obj$covariates   # retrieving the covariates from the object
@@ -11,7 +15,9 @@ krCI <- function(obj = NULL, nsim = 1000, CI = 0.95, individual = NULL){
 
   formula <- formula(obj$formula, lhs = 0, rhs = -2)
 
-  if(class(obj) == "sbchoice"){   # covariance matrix of the estimates
+# Revised in June 2016
+#  if(class(obj) == "sbchoice"){   # covariance matrix of the estimates
+  if(inherits(obj, "sbchoice")){   # covariance matrix of the estimates
     if(obj$dist != "weibull"){
       V <- vcov(obj$glm.out)
     } else {

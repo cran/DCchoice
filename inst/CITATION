@@ -13,7 +13,7 @@ citEntry(entry="Manual",
          note = vers,
 
          textVersion =
-         paste("Tomoaki Nakatani (", year, "). 
+         paste("Tomoaki Nakatani, Hideo Aizaki, Kazuo Sato (", year, "). 
             DCchoice: An R Package for Analyzing 
             Dichotomous Choice Contingent Valuation Data. ",
                vers, ".", sep=""))

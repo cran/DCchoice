@@ -1,4 +1,6 @@
-dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, ...){
+dbchoice <- function (formula, data, subset, na.action = na.omit, dist = "log-logistic", par = NULL, ...){
+# argument "na.action" was added in June 2016
+
   if (!inherits(formula, "Formula"))
     formula <- Formula(formula)
 
@@ -17,7 +19,11 @@ dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, 
   if(missing(data)) stop("the name of the data frame object must be supplied in the 'data' argument")
   
   mf <- match.call(expand.dots = TRUE)
-  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+
+# Revised in June 2016
+#  m <- match(c("formula", "data", "subset"), names(mf), 0L)
+m <- match(c("formula", "data", "subset", "na.action"), names(mf), 0L)
+
   mf <- mf[c(1L, m)]
   mf$formula <- formula
   mf[[1L]] <- as.name("model.frame")
@@ -25,14 +31,14 @@ dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, 
   original.data <- data
   data <- mf
   
-  # removing observations with missing values
-  na.num <- max(sum(as.numeric(is.na(data))))
-  if(na.num != 0){ 
-    d1 <- nrow(data)
-    data <- na.omit(data)
-    d2 <- nrow(data)
-    warning(paste("Missing values detected.", d1 - d2, "rows are removed.", sep = " "))
-  }
+#  # removing observations with missing values
+#  na.num <- max(sum(as.numeric(is.na(data))))
+#  if(na.num != 0){ 
+#    d1 <- nrow(data)
+#    data <- na.omit(data)
+#    d2 <- nrow(data)
+#    warning(paste("Missing values detected.", d1 - d2, "rows are removed.", sep = " "))
+#  }
 
   # defining the dependent variable
   y1 <- model.part(formula, data = data, lhs = 1)[[1]]  # yes/no to the first bid
@@ -55,15 +61,21 @@ dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, 
 
 
     # Creating a design matrix
-    bidf <- formula(formula, lhs = 0, rhs = 2)
-    bid <- model.frame(bidf, data)  # the first and the second stage bids
+# Revised in June 2016
+#    bidf <- formula(formula, lhs = 0, rhs = 2)
+#    bid <- model.frame(bidf, data)  # the first and the second stage bids
+bid <- model.part(formula, data, lhs = 0, rhs = 2)
+
     BID <- ifelse(bid[, 1] > bid[, 2], bid[, 2], bid[, 1])
 
     yvar <- cbind(yy, yn, ny, nn)   # yes/no to "bid"
     
-    ff2 <- formula(formula, lhs = 0, rhs = 1)
-    X <- model.frame(ff2, data)
-    mmX <- model.matrix(ff2, X)
+# Revised in June 2016
+#    ff2 <- formula(formula, lhs = 0, rhs = 1)
+#    X <- model.frame(ff2, data)
+#    mmX <- model.matrix(ff2, X)
+X <- model.part(formula, data, lhs = 0, rhs = 1)
+mmX <- model.matrix(formula, data, lhs = 0, rhs = 1)
 
     tmp.data <- data.frame(y1, mmX, BID)
 
@@ -150,7 +162,11 @@ dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, 
   npar <- length(dbchoice$par)
   
   terms <- terms(formula)
-  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+
+# Revised in June 2016
+#  fac <- which(attr(attr(X, "terms"), "dataClasses") == "factor")
+fac <- which(sapply(X, is.factor) == TRUE)
+
   xlevels <- as.list(fac)
   j <- 0
   for (i in fac) {
@@ -178,6 +194,8 @@ dbchoice <- function (formula, data, subset, dist = "log-logistic", par = NULL, 
       data.name = data,             # the data matrix
       terms = terms,
       contrasts = contrasts,
+# Revised in June 2016
+data = original.data,
       xlevels = xlevels)
 
   class(output) <- "dbchoice"       # setting the object class
@@ -199,7 +217,14 @@ summary.dbchoice <- function(object, ...){
 #    formula_null <- object$formula
     formula_null <- formula(object$formula)
     formula_null[[3]][[2]] <- 1
-    db_null <- dbchoice(formula_null, data = eval(object$data.name), dist = dist, par = coef[c(1, npar)])
+
+# Revised in June 2016
+#    db_null <- dbchoice(formula_null, data = eval(object$data.name), dist = dist, par = coef[c(1, npar)])
+if (inherits(object, "oohbchoice")) {
+  db_null <- oohbchoice(formula_null, data = eval(object$data), dist = dist, par = coef[c(1, npar)])
+} else {
+  db_null <-   dbchoice(formula_null, data = eval(object$data), dist = dist, par = coef[c(1, npar)])
+}
   
   # function for obrtaining AIC and BIC
   akaike <- function(loglik, npar, k ){

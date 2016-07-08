@@ -1,13 +1,19 @@
 # Computing a bootsrap confidence interval
 bootCI <- function (obj, nboot = 1000, CI = 0.95, individual = NULL){
-  if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
+
+# Revised in June 2016
+#  if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){
+if(!inherits(obj, c("sbchoice", "dbchoice", "oohbchoice"))){
     # stop if the object is neither a sdchoice nor a dbchoice class
-    stop("the object must be either dbchoice of sbchoice class")
+#    stop("the object must be either dbchoice of sbchoice class")
+stop("the object must be sbchoice, dbchoice, or oohbchoice class")
   }
   
   if(CI > 1 | CI < 0) stop("CI must be between 0 and 1")
-  
-    tmp.dat <- eval(obj$data.name, parent.frame())   # retrieving the data from the object
+
+# Revised in June 2016  
+#    tmp.dat <- eval(obj$data.name, parent.frame())   # retrieving the data from the object
+tmp.dat <- eval(obj$data, parent.frame())   # retrieving the data from the object
 
   nobs <- obj$nobs
   ind <- 1:nobs
@@ -25,13 +31,28 @@ bootCI <- function (obj, nboot = 1000, CI = 0.95, individual = NULL){
     mm.newX <- model.matrix(formula, mf.nexX, contrasts.arg = obj$contrasts)
   }
 
-  if(class(obj) == "dbchoice"){
+# Revised in June 2016
+#  if(class(obj) == "dbchoice"){
+if(inherits(obj, c("dbchoice", "oohbchoice"))){
+
     for(i in 1:nboot){
       ind.boot <- sample(ind, nobs, replace = TRUE)  # determining the number of rows for bootstrap sample with replacement
       boot.dat <- tmp.dat[ind.boot, ]  # resampling data
-      suppressWarnings(
-        tmp.re <- dbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)  # estimating a DBCV model
-      )
+
+# Revised in June 2016
+#      suppressWarnings(
+#        tmp.re <- dbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)  # estimating a DBCV model
+#      )
+if(!inherits(obj, "oohbchoice")){
+  suppressWarnings(
+    tmp.re <-   dbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)  # estimating a DBCV model
+  )
+} else if(inherits(obj, "oohbchoice")) {
+  suppressWarnings(
+    tmp.re <- oohbchoice(fr, data = boot.dat, dist = dist, par=obj$coefficients)  # estimating an OOHBchoice model
+  )
+}
+
       if(tmp.re$convergence){
         if (is.null(individual)) {
           boot <- wtp(object = tmp.re$covariates, b = tmp.re$coefficients, bid = tmp.re$bid, dist = tmp.re$dist)

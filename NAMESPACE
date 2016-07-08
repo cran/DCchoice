@@ -5,7 +5,9 @@ export("dbchoice",
        "kristrom", 
        "bootCI", 
        "krCI",
-       "ct2df"
+       "ct2df",
+       "oohbchoice",     # added in June 2016
+       "turnbull.oohb"   # added in June 2016
        )
 
 import(MASS)

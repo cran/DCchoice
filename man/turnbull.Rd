@@ -1,11 +1,12 @@
 \name{turnbull}
 \alias{turnbull.db}
 \alias{turnbull.sb}
+\alias{turnbull.oohb}
 \alias{print.turnbull}
 
 \title{The Kaplan-Meier-Turnbull nonparametric approach to analyze dichotomous choice contingent valuation data}
 \description{
-This function analyzes single- or double-bounded dichotomous choice contingent valuation (CV) 
+This function analyzes single-, one-and-one-half-, or double-bounded dichotomous choice contingent valuation (CV) 
 data on the basis of the Kaplan-Meier-Turnbull method.
 }
 
@@ -13,6 +14,11 @@ data on the basis of the Kaplan-Meier-Turnbull method.
 ## for the single-bounded data
 turnbull.sb(formula, data, subset, conf.int = FALSE, B = 200, 
             conf.level = 0.95, timeMessage = FALSE, \dots)
+
+## for the one-and-one-half-bound data
+turnbull.oohb(formula, data, subset, conf.int = FALSE, B = 200, 
+              conf.level = 0.95, timeMessage = FALSE, \dots)
+
 
 ## for the double-bounded data
 turnbull.db(formula, data, subset, conf.int = FALSE, B = 200, 
@@ -35,8 +41,8 @@ turnbull.db(formula, data, subset, conf.int = FALSE, B = 200,
 }
 
 \details{
-The functions \code{turnbull.sb()} and \code{turnbull.db()} analyze single- and 
-double-bounded dichotomous choice contingent valuation (CV) data, respectively, on 
+The functions \code{turnbull.sb()}, \code{turnbull.oohb()}, and \code{turnbull.db()} analyze single-,  
+one-and-one-half-, and double-bounded dichotomous choice contingent valuation (CV) data, respectively, on 
 the basis of the modified Kaplan-Meier-Turnbull method (Carson and Steinberg, 1990).
 
 \strong{For single-bounded dichotomous choice data}\cr
@@ -54,6 +60,14 @@ formula is given by
 
 \code{\link{kristrom}} is an alternative nonparametric method for analyzing single-bounded 
 dichotomous choice data. A parametric analysis can be done by \code{\link{sbchoice}}.
+
+\strong{For one-and-one-half-bound dichotomous choice data}\cr
+The details of \code{turnbull.oohb()} is the same as those of \code{turnbull.db()}.
+See the the subsequent section for details.
+
+A difference between \code{turnbull.oohb()} and \code{turnbull.db()} appears in the
+definition of variables. See \code{\link{oohbchoice}} and \code{\link{oohbsyn}} 
+for the details of creating response and bid variables.  
 
 \strong{For double-bounded dichotomous choice data}\cr
 A generic call to \code{turnbull.db()} is given by
