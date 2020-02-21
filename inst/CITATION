@@ -18,3 +18,17 @@ citEntry(entry="Manual",
             Dichotomous Choice Contingent Valuation Data. ",
                vers, ".", sep=""))
 
+citEntry(
+  entry     = "Book",
+  title     = "Stated Preference Methods Using R",
+  author    = "Hideo Aizaki and Tomoaki Nakatani and Kazuo Sato",
+  year      = "2014",
+  doi       = "10.1201/b17292",
+  publisher = "CRC Press",
+
+  textVersion =
+  paste("Aizaki H, Nakatani T, Sato K (2014).",
+        "Stated Preference Methods Using R.",
+        "CRC Press.",
+        "DOI https://doi.org/10.1201/b17292."))
+

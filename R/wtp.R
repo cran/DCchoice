@@ -1,6 +1,6 @@
 wtp <- function(object, b = NULL, bid = NULL, dist = NULL)
 {
-    if (class(object) == "sbchoice" | class(object) == "dbchoice") {
+    if (inherits(object, "sbchoice") | inherits(object, "dbchoice")) {
         X <- object$covariates
         b <- object$coefficients
         bid <- object$bid

@@ -83,7 +83,7 @@ dichotomous choice data. A parametric analysis can be done by \code{\link{sbchoi
 Croissant Y (2011).
 \emph{\pkg{Ecdat}: Data Sets for Econometrics,} 
 \R package version 0.1-6.1, 
-\url{http://CRAN.R-project.org/package=Ecdat}.
+\url{https://CRAN.R-project.org/package=Ecdat}.
 
 Kristr\"{o}m B (1990). 
 \dQuote{A Non-Parametric Approach to the Estimation of Welfare 

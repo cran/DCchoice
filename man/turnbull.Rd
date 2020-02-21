@@ -146,7 +146,7 @@ Both \code{turnbull.db()} and \code{turnbull.sb()} return an object of S3 class
 Croissant Y (2011).
 \emph{\pkg{Ecdat}: Data Sets for Econometrics,} 
 \R package version 0.1-6.1, 
-\url{http://CRAN.R-project.org/package=Ecdat}.
+\url{https://CRAN.R-project.org/package=Ecdat}.
 
 Fay MP, Shaw PA (2010).
 \dQuote{Exact and Asymptotic Weighted Logrank Tests for Interval Censored Data: 

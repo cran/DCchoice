@@ -164,7 +164,7 @@ Elsevier, New York.
 Croissant Y (2011).
 \emph{\pkg{Ecdat}: Data Sets for Econometrics,} 
 \R package version 0.1-6.1, 
-\url{http://CRAN.R-project.org/package=Ecdat}.
+\url{https://CRAN.R-project.org/package=Ecdat}.
 
 Hanemann, WM (1984). 
 \dQuote{Welfare Evaluations in Contingent Valuation Experiments with Discrete Responses}, 

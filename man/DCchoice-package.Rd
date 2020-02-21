@@ -109,6 +109,7 @@ code.
 Aizaki H, Nakatani T, Sato K (2014).
 \emph{Stated Preference Methods Using R.}
 CRC Press, Boca Raton FL.
+\url{https://doi.org/10.1201/b17292}.
 
 Bishop RC, Heberlein TA (1979).
 \dQuote{Measuring Values of Extra-Market Goods: Are Indirect
@@ -138,7 +139,7 @@ Cooper JC, Hanemann M, Signorello G (2002).
 Croissant Y (2011).
 \emph{\pkg{Ecdat}: Data Sets for Econometrics,} 
 \R package version 0.1-6.1, 
-\url{http://CRAN.R-project.org/package=Ecdat}.
+\url{https://CRAN.R-project.org/package=Ecdat}.
 
 Fay MP, Shaw PA (2010).
 \dQuote{Exact and Asymptotic Weighted Logrank Tests for Interval Censored Data: 
@@ -149,7 +150,7 @@ Fay MP, Shaw PA (2010).
 Gentleman R, Vandal A (2011).
 \emph{Icens: NPMLE for Censored and Truncated Data}. 
 \R package version 1.24.0, 
-\url{http://CRAN.R-project.org/package=Icens}.
+\url{https://CRAN.R-project.org/package=Icens}.
 
 Hanemann, WM (1984). 
 \dQuote{Welfare Evaluations in Contingent Valuation Experiments with Discrete Responses}, 
