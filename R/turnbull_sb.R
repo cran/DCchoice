@@ -1,7 +1,11 @@
 # Kaplan-Meier-Turnbull nonparametric approach to analyze 
 # single-bounded dichotomous choice contingent valuation data
 
-turnbull.sb <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.level = 0.95, timeMessage = FALSE, ...){
+turnbull.sb <- function(formula, data, subset, conf.int = FALSE, B = 200,
+                        conf.level = 0.95, timeMessage = FALSE, 
+                        seed = 19439101, ...){
+# added argument seed (September 2020)
+
     if(missing(data)) data <- environment(formula)
     
     if(length(formula[[2]]) != 1) stop("something is wrong with formula")
@@ -43,9 +47,15 @@ turnbull.sb <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.l
     left <- ifelse(y == 1, first, 0)         # lower bound of WTP
     right <- ifelse(y == 1, Inf, first)      # upper bound of WTP
     unq.bid <- sort(unique(c(left, right)))  # unique bids including Inf
-    
-    turnbull <- icfit(L = left, R = right, conf.int  = conf.int, control = icfitControl(timeMessage = timeMessage, B = B, conf.level = conf.level))   # estimating nonparametric survival function. icfit function is defined in interval package
-    
+
+    # estimating nonparametric survival function. icfit function is defined in interval package    
+    turnbull <- icfit(L = left, R = right, conf.int  = conf.int,
+                      control = icfitControl(timeMessage = timeMessage,
+                      B = B,
+                      conf.level = conf.level,
+                      seed = seed))
+    # added argument seed (September 2020)
+
     # arranging outcomes into a single list variable
     output <- list(
         left = left,

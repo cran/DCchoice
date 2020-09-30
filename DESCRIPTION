@@ -1,25 +1,27 @@
 Package: DCchoice
-Version: 0.0.16
-Date: 2020-02-21
+Version: 0.0.17
+Date: 2020-09-30
 Title: Analyzing Dichotomous Choice Contingent Valuation Data
-Authors@R: c( person("Tomoaki", "Nakatani", role = c("aut",
-        "cph"), email = "naktom2@gmail.com", comment = "original developer"), person("Hideo", "Aizaki",
-        role = c("aut", "cre"), email = "azk-r@spa.nifty.com", comment = "code
-        patches"), person("Kazuo", "Sato", role = "ctb", email =
-        "satokazu@rakuno.ac.jp", comment = "theoretical part of the
-        manual"))
-Depends: R (>= 3.5.0), stats, MASS, interval, Formula
+Authors@R: c( person("Tomoaki", "Nakatani", role = c("aut", "cph"),
+        email = "naktom2@gmail.com", comment = "original developer"),
+        person("Hideo", "Aizaki", role = c("aut", "cre"), 
+        email = "azk-r@spa.nifty.com", comment = "code patches"),
+        person("Kazuo", "Sato", role = "ctb", email = "satokazu@rakuno.ac.jp",
+        comment = "theoretical part of the manual"))
+Description: Functions for analyzing dichotomous choice contingent 
+   valuation (CV) data. It provides functions for estimating parametric and 
+   nonparametric models for single-, one-and-one-half-, and double-bounded 
+   CV data. For details, see Aizaki et al. (2014) <doi:10.1201/b17292>.
+Depends: R (>= 3.5.0)
+Imports: stats, MASS, interval, Formula
 Suggests: Ecdat
 License: GPL (>= 2)
-Description: Functions for analyzing dichotomous choice contingent valuation (CV) data. It provides 
-   functions for estimating parametric and nonparametric models for single-, one-and-one-half-, 
-   and double-bounded CV data. For details, see Aizaki et al. (2014) <doi:10.1201/b17292>.
 URL: http://www.agr.hokudai.ac.jp/spmur/
 NeedsCompilation: no
-Packaged: 2020-02-21 06:11:59 UTC; user
+Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
+Packaged: 2020-09-30 02:39:42 UTC; user
 Author: Tomoaki Nakatani [aut, cph] (original developer),
   Hideo Aizaki [aut, cre] (code patches),
   Kazuo Sato [ctb] (theoretical part of the manual)
-Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
 Repository: CRAN
-Date/Publication: 2020-02-21 18:00:13 UTC
+Date/Publication: 2020-09-30 08:10:02 UTC

@@ -107,6 +107,11 @@ yvar <- cbind(yy, yn, nn)
 X <- model.part(formula, data, lhs = 0, rhs = 1)
 mmX <- model.matrix(formula, data, lhs = 0, rhs = 1)
 
+# Revised in September 2020
+if(!any(colnames(mmX) == "(Intercept)")) {
+  stop(message = "constant (intercept) term is required for the formula")
+}
+
     tmp.data <- data.frame(y1, mmX, BID)
 
    # obtaining initial parameter values by logit model
@@ -253,7 +258,11 @@ class(output) <- c("oohbchoice", "dbchoice")       # setting the object class
 
 ##### a function for Kaplan-Meier-Turnbull nonparametric approach to analyze OOHB choice data #####
 
-turnbull.oohb <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.level = 0.95, timeMessage = FALSE, ...){
+turnbull.oohb <- function(formula, data, subset, conf.int = FALSE, B = 200,
+                          conf.level = 0.95, timeMessage = FALSE,
+                          seed = 19439101, ...){
+# added argument seed (September 2020)
+
     if (!inherits(formula, "Formula"))
         formula <- Formula(formula)
 
@@ -340,8 +349,10 @@ right <- ifelse(firstLower.yn == 1 | firstHigher.ny == 1, Lhig,
     # estimating nonparametric survival function. icfit function is defined in interval package
     turnbull <- icfit(L = left, R = right, conf.int = conf.int, 
                       control = icfitControl(timeMessage = timeMessage, B = B,
-                                             conf.level = conf.level))
-    
+                                             conf.level = conf.level,
+                                             seed = seed))
+    # added argument seed (September 2020)
+
     # arranging outcomes into a single list variable
     output <- list(
         left = left,

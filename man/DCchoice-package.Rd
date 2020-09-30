@@ -145,7 +145,7 @@ Fay MP, Shaw PA (2010).
 \dQuote{Exact and Asymptotic Weighted Logrank Tests for Interval Censored Data: 
     The \pkg{interval} \R Package}, 
 \emph{Journal of Statistical Software}, 
-\bold{36}(2), 1-34. \url{http://www.jstatsoft.org/v36/i02/}.
+\bold{36}(2), 1-34. \url{https://www.jstatsoft.org/v36/i02/}.
 
 Gentleman R, Vandal A (2011).
 \emph{Icens: NPMLE for Censored and Truncated Data}. 

@@ -53,6 +53,11 @@ BID <- model.part(formula, data, lhs = 0, rhs = 2)
 X   <-   model.part(formula, data, lhs = 0, rhs = 1)
 mmX <- model.matrix(formula, data, lhs = 0, rhs = 1)
 
+# Revised in September 2020
+if(!any(colnames(mmX) == "(Intercept)")) {
+  stop(message = "constant (intercept) term is required for the formula")
+}
+
   form <- formula(terms(formula))
 
 # Revised in June 2016

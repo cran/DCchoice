@@ -13,16 +13,16 @@ data on the basis of the Kaplan-Meier-Turnbull method.
 \usage{
 ## for the single-bounded data
 turnbull.sb(formula, data, subset, conf.int = FALSE, B = 200, 
-            conf.level = 0.95, timeMessage = FALSE, \dots)
+            conf.level = 0.95, timeMessage = FALSE, seed = 19439101, \dots)
 
 ## for the one-and-one-half-bound data
 turnbull.oohb(formula, data, subset, conf.int = FALSE, B = 200, 
-              conf.level = 0.95, timeMessage = FALSE, \dots)
+              conf.level = 0.95, timeMessage = FALSE, seed = 19439101, \dots)
 
 
 ## for the double-bounded data
 turnbull.db(formula, data, subset, conf.int = FALSE, B = 200, 
-            conf.level = 0.95, timeMessage = FALSE, \dots)
+            conf.level = 0.95, timeMessage = FALSE, seed = 19439101, \dots)
 
 \method{print}{turnbull}(x, digits = max(3, getOption("digits") - 1), \dots)
 }
@@ -37,6 +37,7 @@ turnbull.db(formula, data, subset, conf.int = FALSE, B = 200,
     \item{conf.level}{a confidence coefficient. Defaulted to 0.95.}
     \item{timeMessage}{logical. If \code{TRUE}, the estimated time for bootstrapping is displayed.}
     \item{digits}{a number of digits to display.}
+    \item{seed}{a seed for a random number generator.}
     \item{\dots}{optional arguments. Currently not in use.}
 }
 
@@ -152,7 +153,7 @@ Fay MP, Shaw PA (2010).
 \dQuote{Exact and Asymptotic Weighted Logrank Tests for Interval Censored Data: 
     The \pkg{interval} \R Package}, 
 \emph{Journal of Statistical Software}, 
-\bold{36}(2), 1-34. \url{http://www.jstatsoft.org/v36/i02/}.
+\bold{36}(2), 1-34. \url{https://www.jstatsoft.org/v36/i02/}.
 
 Krinsky I, Robb AL (1986).
 \dQuote{On Approximating the Statistical Properties of Elasticities.}

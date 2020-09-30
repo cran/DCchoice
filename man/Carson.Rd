@@ -58,7 +58,7 @@ Carson RT, Mitchell RC, Hanemann WM, Kopp RJ, Presser S, Ruud PA (1992).
   Resulting from the Exxon Valdez Oil Spill.}
 \emph{Technical Report Report to the Attorney General of the State of
   Alaska}, Natural Resource Damage Assessment Inc.
-\url{http://mpra.ub.uni-muenchen.de/6984/}.
+\url{https://mpra.ub.uni-muenchen.de/6984/}.
 
 }
 

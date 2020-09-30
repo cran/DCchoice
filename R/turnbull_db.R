@@ -3,7 +3,11 @@
 # Functions for summarizing the object and plotting the survivor 
 # function are also defined.
 
-turnbull.db <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.level = 0.95, timeMessage = FALSE, ...){
+turnbull.db <- function(formula, data, subset, conf.int = FALSE, B = 200, 
+                        conf.level = 0.95, timeMessage = FALSE, 
+                        seed = 19439101, ...){
+# added argument seed (September 2020)
+
     if (!inherits(formula, "Formula"))
         formula <- Formula(formula)
 
@@ -60,7 +64,14 @@ turnbull.db <- function(formula, data, subset, conf.int = FALSE, B = 200, conf.l
     right <- ifelse(yn ==1 | nn == 1, second, ifelse(ny == 1, first, Inf))  # upper bound of WTP
     unq.bid <- sort(unique(c(left, right)))   # unique bids including Inf
     
-    turnbull <- icfit(L = left, R = right, conf.int = conf.int, control = icfitControl(timeMessage = timeMessage, B = B, conf.level = conf.level))    # estimating nonparametric survival function. icfit function is defined in interval package
+    # estimating nonparametric survival function.
+    # icfit function is defined in interval package
+    turnbull <- icfit(L = left, R = right, conf.int = conf.int,
+                      control = icfitControl(timeMessage = timeMessage,
+                                             B = B,
+                                             conf.level = conf.level,
+                                             seed = seed))
+    # added argument seed (September 2020)
     
     # arranging outcomes into a single list variable
     output <- list(
