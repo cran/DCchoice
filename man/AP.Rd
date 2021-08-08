@@ -44,8 +44,7 @@ observations with missing values were removed from the subset.
 
 \source{
 The complete data and details can be obtained in the online version of 
-Whitehead (2015) at 
-\url{http://dx.doi.org/10.1016/j.dib.2015.01.006}.
+Whitehead (2015).
 
 The data are included here under kind permission from Professor 
 John Whitehead, Appalachian State University.
@@ -60,7 +59,6 @@ Whitehead JC (1995).
 Whitehead JC (2015).
 \dQuote{Albemarle-Pamlico Sounds Revealed and Stated Preference Data.}
 \emph{Data in Brief}, \bold{3}, 90--94.
-\url{http://dx.doi.org/10.1016/j.dib.2015.01.006}
 
 Whitehead JC, Haab TC, Huang JC (1998).
 \dQuote{Part-Whole Bias in Contingent Valuation: Will Scope Effects 

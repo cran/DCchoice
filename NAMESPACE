@@ -7,11 +7,14 @@ export("dbchoice",
        "krCI",
        "ct2df",
        "oohbchoice",     # added in June 2016
-       "turnbull.oohb"   # added in June 2016
+       "turnbull.oohb",   # added in June 2016
+       "sbspike",        # added in August 2021
+       "oohbspike",      # added in August 2021
+       "dbspike",        # added in August 2021
+       "spikeCoef"           # added in August 2021
        )
 
 import(MASS)
-# import(Ecdat)
 import(interval)
 import(Formula)
 
@@ -22,34 +25,48 @@ importFrom("stats", "binomial", "glm", "integrate", "logLik",
            "update", "vcov")
 importFrom("stats", "as.formula", "coefficients", "delete.response",
            "formula", "getCall", "model.frame")
+importFrom("stats", "dlogis", "terms")
 
 S3method(print, dbchoice)
 S3method(print, summary.dbchoice)
 S3method(summary, dbchoice)
+
 S3method(print, sbchoice)
 S3method(print, summary.sbchoice)
 S3method(summary, sbchoice)
+
 S3method(print, turnbull)
 S3method(print, summary.turnbull)
 S3method(summary, turnbull)
 S3method(plot, turnbull)
+
 S3method(print, kristrom)
 S3method(print, summary.kristrom)
 S3method(summary, kristrom)
 S3method(plot, kristrom)
+
 S3method(print, krCI)
-#S3method(summary, krCI)
 S3method(print, bootCI)
-# S3method(summary, bootCI)
 
 S3method(logLik, dbchoice)
 S3method(logLik, sbchoice)
+S3method(logLik, spike)
+
 S3method(plot, dbchoice)
 S3method(plot, sbchoice)
+S3method(plot, spike)
+
 S3method(predict, dbchoice)
 S3method(predict, sbchoice)
+
 S3method(update, dbchoice)
 S3method(update, sbchoice)
+
 S3method(vcov, dbchoice)
 S3method(vcov, sbchoice)
+S3method(vcov, spike)
+
+S3method(print, spike)
+S3method(summary, spike)
+S3method(print, summary.spike)
 

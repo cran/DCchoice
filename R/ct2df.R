@@ -1,8 +1,10 @@
-ct2df <- function(
+ct2df.default <- function(
   x,
   bid1  = "bid1",  
   bid2h = "bidh",  
   bid2l = "bidl",  
+  bidl  = "bidl",
+  bidh  = "bidh",
   yy    = "yy",
   yn    = "yn",
   ny    = "ny",
@@ -28,7 +30,7 @@ ct2df <- function(
 
     cv.data <- data.frame(R1 = R1, bid1 = bid1)
 
-  } else { # double-bounded
+  } else if (type == "double") { # double-bounded
 
     if (ncol(x) != 7) {
       stop("number of columns of x must be 7 for double-bounded")
@@ -55,6 +57,29 @@ ct2df <- function(
     cv.data <- merge(bid.table, data,  by = "B1")
     cv.data$bid1 <- cv.data$B1
     cv.data$bid2 <- cv.data$B2H * cv.data$R1 + cv.data$B2L * (cv.data$R1 == 0)
+  } else { # oohb
+  
+    reshape.x <- x[c(bidl, bidh, yy, yn, n, y, ny, nn)]
+    colnames(reshape.x) <- 
+      c("BL", "BH", "yy", "yn", "n", "y", "ny", "nn")
+
+    bid.table      <- reshape.x[, c(1, 2)]
+    response.table <- reshape.x[, c(3, 4, 5, 6, 7, 8)]
+
+    BL <- rep(bid.table[, 1], rowSums(response.table))
+    R  <- rep(names(response.table), response.table[1, ])
+    for (i in 2:nrow(x)) {
+      R <- c(R, rep(names(response.table), response.table[i, ]))
+    }
+
+    data <- data.frame(
+      BL = BL,
+      R  = R,
+      R1 = (R == "yy") + (R == "yn") + (R == "y"),
+      R2 = (R == "yy") + (R == "ny") - 9 * ((R == "y") + (R == "n")))
+
+    cv.data <- merge(bid.table, data,  by = "BL")
+  
   }
 
   return(cv.data)

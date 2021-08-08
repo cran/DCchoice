@@ -103,13 +103,14 @@ code.
 
 }
 
-
+\section{Acknowledgments}{
+This work was supported by JSPS KAKENHI Grant Number JP20K06251.
+}
 
 \references{
 Aizaki H, Nakatani T, Sato K (2014).
 \emph{Stated Preference Methods Using R.}
 CRC Press, Boca Raton FL.
-\url{https://doi.org/10.1201/b17292}.
 
 Bishop RC, Heberlein TA (1979).
 \dQuote{Measuring Values of Extra-Market Goods: Are Indirect

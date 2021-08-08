@@ -1,4 +1,4 @@
-krCI <- function(obj = NULL, nsim = 1000, CI = 0.95, individual = NULL){
+krCI.default <- function(obj, nsim, CI, individual){
   if(CI > 1) stop("CI must be between 0 and 1")
 
 # Revised in June 2016

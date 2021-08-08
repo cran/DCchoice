@@ -1,5 +1,5 @@
 # Computing a bootsrap confidence interval
-bootCI <- function (obj, nboot = 1000, CI = 0.95, individual = NULL){
+bootCI.default <- function (obj, nboot, CI, individual){
 
 # Revised in June 2016
 #  if(class(obj) != "sbchoice" & class(obj) != "dbchoice"){

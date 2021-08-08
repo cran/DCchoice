@@ -1,11 +1,11 @@
 Package: DCchoice
-Version: 0.0.17
-Date: 2020-09-30
+Version: 0.1.0
+Date: 2021-08-08
 Title: Analyzing Dichotomous Choice Contingent Valuation Data
 Authors@R: c( person("Tomoaki", "Nakatani", role = c("aut", "cph"),
         email = "naktom2@gmail.com", comment = "original developer"),
         person("Hideo", "Aizaki", role = c("aut", "cre"), 
-        email = "azk-r@spa.nifty.com", comment = "code patches"),
+        email = "azk-r@spa.nifty.com"),
         person("Kazuo", "Sato", role = "ctb", email = "satokazu@rakuno.ac.jp",
         comment = "theoretical part of the manual"))
 Description: Functions for analyzing dichotomous choice contingent 
@@ -19,9 +19,9 @@ License: GPL (>= 2)
 URL: http://www.agr.hokudai.ac.jp/spmur/
 NeedsCompilation: no
 Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
-Packaged: 2020-09-30 02:39:42 UTC; user
+Packaged: 2021-08-08 07:17:21 UTC; user
 Author: Tomoaki Nakatani [aut, cph] (original developer),
-  Hideo Aizaki [aut, cre] (code patches),
+  Hideo Aizaki [aut, cre],
   Kazuo Sato [ctb] (theoretical part of the manual)
 Repository: CRAN
-Date/Publication: 2020-09-30 08:10:02 UTC
+Date/Publication: 2021-08-08 08:00:02 UTC
