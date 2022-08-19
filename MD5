@@ -1,6 +1,6 @@
-c0df8a21167878b162cee933719fbbde *DESCRIPTION
+815dabb66e9f0d37369196f50e388521 *DESCRIPTION
 197194c581f6d5baf26cbf307c7306f8 *NAMESPACE
-165f35dc228bc06af7866db68a459e0f *R/bootCI.R
+696db43600852ac792dcb1b7b2715a5d *R/bootCI.R
 8133ee43c30862cc7e6f31b81dc22644 *R/ct2df.R
 e0a479eddbec82d05a7926d2a188cafd *R/dbchoice.R
 0d1bef9d940b2225190663a870b89a5a *R/dbspike.R
@@ -29,10 +29,10 @@ e1774b0ee43dd8808b11543b0a4986b0 *data/CarsonDB.rda
 40b26a399c1b79bccba439ee81fece84 *data/CarsonSB.rda
 9efea93daf977b9a1dad989447bd5b5f *data/KR.rda
 99b6e67732167f44c7e4f778bd3dafd0 *data/oohbsyn.rda
-8e38c02649b01486dc72585ac58359c6 *inst/CITATION
+fce57c895f5dbc26b636553c248486e4 *inst/CITATION
 395bf6895fc46df625ba2c12b8eae8b9 *man/AP.Rd
 8c942c27cc59831515bc7d9740acdc74 *man/Carson.Rd
-204856bfc7f409116eddc88d5d914d61 *man/DCchoice-package.Rd
+9817dadc19a77a5d110375c262c61a5e *man/DCchoice-package.Rd
 544f61e580c0594ffd0e7fe238fa39d5 *man/KR.Rd
 20594cafaece62d2b169846aaaefc7f1 *man/bootCI.Rd
 15a596330b9cef02370f7eebcbb37a37 *man/ct2df.Rd

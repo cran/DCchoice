@@ -67,7 +67,7 @@ if(!inherits(obj, "oohbchoice")){
         i < i - 1        # discard an unconverged trial
       }
     }
-  } else if(class(obj) == "sbchoice"){
+  } else if(inherits(obj, "sbchoice")) {
     for(i in 1:nboot){
       ind.boot <- sample(ind, nobs, replace = TRUE)
       boot.dat <- tmp.dat[ind.boot, ]

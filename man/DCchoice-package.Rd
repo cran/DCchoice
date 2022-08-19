@@ -1,5 +1,6 @@
 \name{DCchoice-package}
 \alias{DCchoice-package}
+\alias{DCchoice}
 \docType{package}
 
 \title{DCchoice: a package for analyzing dichotomous choice contingent valuation data}
@@ -111,6 +112,12 @@ This work was supported by JSPS KAKENHI Grant Number JP20K06251.
 Aizaki H, Nakatani T, Sato K (2014).
 \emph{Stated Preference Methods Using R.}
 CRC Press, Boca Raton FL.
+
+Aizaki H, Nakatani T, Sato K, Fogarty J (2022).
+\dQuote{R package DCchoice for dichotomous choice contingent valuation: a
+  contribution to open scientific software and its impact}
+\emph{Japanese Journal of Statistics and Data Science}.
+\url{https://link.springer.com/article/10.1007/s42081-022-00171-1}.
 
 Bishop RC, Heberlein TA (1979).
 \dQuote{Measuring Values of Extra-Market Goods: Are Indirect
