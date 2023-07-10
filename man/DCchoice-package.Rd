@@ -116,7 +116,7 @@ CRC Press, Boca Raton FL.
 Aizaki H, Nakatani T, Sato K, Fogarty J (2022).
 \dQuote{R package DCchoice for dichotomous choice contingent valuation: a
   contribution to open scientific software and its impact}
-\emph{Japanese Journal of Statistics and Data Science}.
+\emph{Japanese Journal of Statistics and Data Science}, \bold{5}, 871--884.
 \url{https://link.springer.com/article/10.1007/s42081-022-00171-1}.
 
 Bishop RC, Heberlein TA (1979).

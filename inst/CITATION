@@ -1,21 +1,23 @@
 citHeader("To cite the 'DCchoice' package in publications use:")
 
-citEntry(
-  entry     = "Article",
+bibentry(
+  bibtype   = "Article",
   title     = "R package DCchoice for dichotomous choice contingent valuation: a contribution to open scientific software and its impact",
   author    = "Hideo Aizaki and Tomoaki Nakatani and Kazuo Sato and James Fogarty",
   year      = "2022",
+  volume    = "5",
+  pages     = "871--884",
   journal   = "Japanese Journal of Statistics and Data Science",
   doi       = "10.1007/s42081-022-00171-1",
 
   textVersion =
   paste("Aizaki H, Nakatani T, Sato K, Fogarty J (2022).",
         "R package DCchoice for dichotomous choice contingent valuation: a contribution to open scientific software and its impact.",
-        "Japanese Journal of Statistics and Data Science.",
+        "Japanese Journal of Statistics and Data Science. 5:871-884.",
         "DOI https://doi.org/10.1007/s42081-022-00171-1."))
 
-citEntry(
-  entry     = "Book",
+bibentry(
+  bibtype   = "Book",
   title     = "Stated Preference Methods Using R",
   author    = "Hideo Aizaki and Tomoaki Nakatani and Kazuo Sato",
   year      = "2014",
@@ -31,19 +33,19 @@ citEntry(
 year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
 vers <- paste("R package version", meta$Version)
 
-citEntry(entry="Manual",
-         title = "DCchoice: An R Package for Analyzing 
-            Dichotomous Choice Contingent Valuation Data",
-         author = c(as.person("Tomoaki Nakatani"),
-                    as.person("Hideo Aizaki"),
-                    as.person("Kazuo Sato")),
-         year = year,
-         note = vers,
+bibentry(
+  bibtype="Manual",
+  title = "DCchoice: An R Package for Analyzing Dichotomous Choice Contingent Valuation Data",
+  author = c(as.person("Tomoaki Nakatani"),
+             as.person("Hideo Aizaki"),
+             as.person("Kazuo Sato")),
+  year = year,
+  note = vers,
 
-         textVersion =
-         paste("Tomoaki Nakatani, Hideo Aizaki, Kazuo Sato (", year, "). 
-            DCchoice: An R Package for Analyzing 
-            Dichotomous Choice Contingent Valuation Data. ",
-               vers, ".", sep=""))
+  textVersion =
+    paste("Tomoaki Nakatani, Hideo Aizaki, Kazuo Sato (", year, "). 
+          DCchoice: An R Package for Analyzing 
+          Dichotomous Choice Contingent Valuation Data. ",
+          vers, ".", sep=""))
 
 

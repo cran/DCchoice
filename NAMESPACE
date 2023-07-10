@@ -7,11 +7,12 @@ export("dbchoice",
        "krCI",
        "ct2df",
        "oohbchoice",     # added in June 2016
-       "turnbull.oohb",   # added in June 2016
+       "turnbull.oohb",  # added in June 2016
        "sbspike",        # added in August 2021
        "oohbspike",      # added in August 2021
        "dbspike",        # added in August 2021
-       "spikeCoef"           # added in August 2021
+       "spikeCoef",      # added in August 2021
+       "dccvResponse"    # added in July 2023 
        )
 
 import(MASS)
@@ -26,6 +27,8 @@ importFrom("stats", "binomial", "glm", "integrate", "logLik",
 importFrom("stats", "as.formula", "coefficients", "delete.response",
            "formula", "getCall", "model.frame")
 importFrom("stats", "dlogis", "terms")
+
+importFrom("stats", "rlogis")
 
 S3method(print, dbchoice)
 S3method(print, summary.dbchoice)

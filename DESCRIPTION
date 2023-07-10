@@ -1,6 +1,6 @@
 Package: DCchoice
-Version: 0.1.1
-Date: 2022-08-19
+Version: 0.2.0
+Date: 2023-07-10
 Title: Analyzing Dichotomous Choice Contingent Valuation Data
 Authors@R: c( person("Tomoaki", "Nakatani", role = c("aut", "cph"),
         email = "naktom2@gmail.com", comment = "original developer"),
@@ -22,6 +22,6 @@ Maintainer: Hideo Aizaki <azk-r@spa.nifty.com>
 Author: Tomoaki Nakatani [aut, cph] (original developer),
   Hideo Aizaki [aut, cre],
   Kazuo Sato [ctb] (theoretical part of the manual)
-Packaged: 2022-08-19 02:23:35 UTC; user
+Packaged: 2023-07-10 06:03:52 UTC; rpkgdev
 Repository: CRAN
-Date/Publication: 2022-08-19 07:00:02 UTC
+Date/Publication: 2023-07-10 23:40:50 UTC
